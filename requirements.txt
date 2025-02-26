@@ -1,0 +1,15 @@
+# Python Dependencies:
+streamlit
+langchain
+langgraph
+
+# ---------------------------------------------------------------------
+# Linux System Tools:
+# These tools are required for the subprocess calls in the code.
+#
+# For Debian/Ubuntu-based systems, you can install them using:
+#
+#   sudo apt-get update && sudo apt-get install -y nmap gobuster ffuf
+#
+# If you're using another Linux distribution, use the corresponding package manager commands.
+# ---------------------------------------------------------------------

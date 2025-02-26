@@ -62,7 +62,7 @@ def gobuster_node(state: AgentState) -> AgentState:
         state["errors"].append("gobuster not found. Please install gobuster.")
         return state
 
-    cmd = ["gobuster", "dir", "-u", f"http://{target}", "-w", "common.txt"]
+    cmd = ["gobuster", "-u", f"http://{target}", "-w", "common.txt"]
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         output = result.stdout
@@ -102,7 +102,6 @@ def build_graph():
     graph.add_node("ffuf", ffuf_node)
     graph.add_node("final", final_report_node)
     
-
     graph.set_entry_point("breakdown")
     graph.add_edge("breakdown", "validate")
     graph.add_edge("validate", "nmap")
@@ -112,14 +111,8 @@ def build_graph():
     
     return graph.compile()
 
-# Streamlit App
 def main():
     st.title("LangGraph-based Agentic Cybersecurity Pipeline")
-    st.markdown("""
-    This demo uses **LangGraph** to implement an autonomous cybersecurity pipeline.  
-    The system accepts a high-level security instruction, breaks it into tasks, validates the target,  
-    runs actual command-line scans using nmap, gobuster, and ffuf, and finally generates a report.
-    """)
     
     instruction = st.text_input(
         "Enter a security task instruction:",
@@ -145,13 +138,20 @@ def main():
         final_state = graph.invoke(state)
         
         st.success("Pipeline execution finished.")
-        st.markdown("### Pipeline Results")
-        for res in final_state["results"]:
-            st.write(res)
+        st.markdown("## Pipeline Results")
+        
+        # Format results with headings and code blocks
+        formatted_results = ""
+        for idx, res in enumerate(final_state["results"], start=1):
+            formatted_results += f"**Result {idx}:**\n```\n{res}\n```\n\n"
+        st.markdown(formatted_results)
+        
         if final_state["errors"]:
-            st.error("Errors encountered:")
-            for err in final_state["errors"]:
-                st.write(err)
+            st.error("### Errors encountered:")
+            formatted_errors = ""
+            for idx, err in enumerate(final_state["errors"], start=1):
+                formatted_errors += f"**Error {idx}:**\n```\n{err}\n```\n\n"
+            st.markdown(formatted_errors)
 
 if __name__ == "__main__":
     main()
